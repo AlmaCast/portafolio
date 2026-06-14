@@ -7,13 +7,19 @@ function cardMarkup(item) {
     ? `background-image:url('${item.poster}');background-size:cover;background-position:center;`
     : `background:${grad};`;
   const badge = item.badge ? `<span class="card-badge">${item.badge}</span>` : '';
+  // Solo los mp4 tienen preview en hover
+  const preview = item.type === 'mp4'
+    ? `<video class="card-preview" muted loop playsinline preload="none" data-src="${item.src}"></video>`
+    : '';
   return `
     <article class="card" tabindex="0"
       data-type="${item.type}" data-src="${item.src}"
       data-title="${item.title}" data-desc="${item.desc}">
       <div class="card-media" style="${bg}">
+        ${preview}
         ${badge}
         <div class="card-play">▶</div>
+        <div class="card-title-overlay">${item.title}</div>
       </div>
       <div class="card-meta"><h4>${item.title}</h4></div>
     </article>`;
@@ -47,6 +53,31 @@ document.querySelectorAll('.row-wrap').forEach((wrap) => {
     track.scrollBy({ left: scrollBy(), behavior: 'smooth' })
   );
 });
+
+/* ===== Preview en hover (estilo Netflix) ===== */
+const supportsHover = window.matchMedia('(hover: hover)').matches;
+if (supportsHover) {
+  document.querySelectorAll('.card').forEach((card) => {
+    const video = card.querySelector('.card-preview');
+    if (!video) return;
+    let timer = null;
+
+    card.addEventListener('mouseenter', () => {
+      timer = setTimeout(() => {
+        if (!video.src) video.src = video.dataset.src; // carga diferida
+        video.currentTime = 0;
+        const p = video.play();
+        if (p) p.then(() => card.classList.add('previewing')).catch(() => {});
+      }, 450);
+    });
+
+    card.addEventListener('mouseleave', () => {
+      clearTimeout(timer);
+      card.classList.remove('previewing');
+      video.pause();
+    });
+  });
+}
 
 /* ===== Modal de video ===== */
 const modal = document.getElementById('modal');
