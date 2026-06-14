@@ -13,7 +13,7 @@ function cardMarkup(item) {
     : '';
   return `
     <article class="card" tabindex="0"
-      data-type="${item.type}" data-src="${item.src}"
+      data-type="${item.type}" data-src="${item.src}" data-drive="${item.drive || ''}"
       data-title="${item.title}" data-desc="${item.desc}">
       <div class="card-media" style="${bg}">
         ${preview}
@@ -89,7 +89,9 @@ function openModal(data) {
   mTitle.textContent = data.title;
   mDesc.textContent = data.desc;
   let html = '';
-  if (data.type === 'mp4') {
+  if (data.drive) {
+    html = `<iframe src="https://drive.google.com/file/d/${data.drive}/preview" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+  } else if (data.type === 'mp4') {
     html = `<video src="${data.src}" controls autoplay playsinline></video>`;
   } else if (data.type === 'youtube') {
     html = `<iframe src="https://www.youtube.com/embed/${data.src}?autoplay=1" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>`;
@@ -116,6 +118,7 @@ document.querySelectorAll('.card').forEach((card) => {
     openModal({
       type: card.dataset.type,
       src: card.dataset.src,
+      drive: card.dataset.drive,
       title: card.dataset.title,
       desc: card.dataset.desc,
     });

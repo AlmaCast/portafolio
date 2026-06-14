@@ -15,3 +15,7 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Originales de video (solo locales, para re-codificar)
+originales/
+assets/_postergen/
