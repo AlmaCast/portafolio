@@ -7,21 +7,15 @@ function cardMarkup(item) {
     ? `background-image:url('${item.poster}');background-size:cover;background-position:center;`
     : `background:${grad};`;
   const badge = item.badge ? `<span class="card-badge">${item.badge}</span>` : '';
-  // Solo los mp4 tienen preview en hover
-  const preview = item.type === 'mp4'
-    ? `<video class="card-preview" muted loop playsinline preload="none" data-src="${item.src}"></video>`
-    : '';
   return `
     <article class="card" tabindex="0"
       data-type="${item.type}" data-src="${item.src}" data-drive="${item.drive || ''}"
+      data-vertical="${item.vertical ? 'true' : 'false'}" data-badge="${item.badge || ''}"
       data-title="${item.title}" data-desc="${item.desc}">
       <div class="card-media" style="${bg}">
-        ${preview}
         ${badge}
         <div class="card-play">▶</div>
-        <div class="card-title-overlay">${item.title}</div>
       </div>
-      <div class="card-meta"><h4>${item.title}</h4></div>
     </article>`;
 }
 
@@ -45,39 +39,14 @@ if (catalogEl && typeof CATALOG !== 'undefined') {
 /* ===== Flechas de carrusel ===== */
 document.querySelectorAll('.row-wrap').forEach((wrap) => {
   const track = wrap.querySelector('.row-track');
-  const scrollBy = () => Math.max(track.clientWidth * 0.8, 240);
+  const amount = () => Math.max(track.clientWidth * 0.8, 240);
   wrap.querySelector('.left').addEventListener('click', () =>
-    track.scrollBy({ left: -scrollBy(), behavior: 'smooth' })
+    track.scrollBy({ left: -amount(), behavior: 'smooth' })
   );
   wrap.querySelector('.right').addEventListener('click', () =>
-    track.scrollBy({ left: scrollBy(), behavior: 'smooth' })
+    track.scrollBy({ left: amount(), behavior: 'smooth' })
   );
 });
-
-/* ===== Preview en hover (estilo Netflix) ===== */
-const supportsHover = window.matchMedia('(hover: hover)').matches;
-if (supportsHover) {
-  document.querySelectorAll('.card').forEach((card) => {
-    const video = card.querySelector('.card-preview');
-    if (!video) return;
-    let timer = null;
-
-    card.addEventListener('mouseenter', () => {
-      timer = setTimeout(() => {
-        if (!video.src) video.src = video.dataset.src; // carga diferida
-        video.currentTime = 0;
-        const p = video.play();
-        if (p) p.then(() => card.classList.add('previewing')).catch(() => {});
-      }, 450);
-    });
-
-    card.addEventListener('mouseleave', () => {
-      clearTimeout(timer);
-      card.classList.remove('previewing');
-      video.pause();
-    });
-  });
-}
 
 /* ===== Modal de video ===== */
 const modal = document.getElementById('modal');
@@ -103,7 +72,9 @@ function openModal(data) {
   modal.setAttribute('aria-hidden', 'false');
   document.body.style.overflow = 'hidden';
 }
-
+function openModalFromCard(card) {
+  openModal({ type: card.dataset.type, src: card.dataset.src, title: card.dataset.title, desc: card.dataset.desc });
+}
 function closeModal() {
   modal.classList.remove('open');
   modal.setAttribute('aria-hidden', 'true');
@@ -111,20 +82,68 @@ function closeModal() {
   document.body.style.overflow = '';
 }
 
+/* ===== Preview popup que se ensancha al video (estilo Netflix) ===== */
+const supportsHover = window.matchMedia('(hover: hover)').matches;
+const pop = document.getElementById('previewPop');
+const popVideo = pop.querySelector('.pp-video');
+const popMedia = pop.querySelector('.pp-media');
+const popBadge = pop.querySelector('.pp-badge');
+const popTitle = pop.querySelector('.pp-title');
+let popCard = null, enterTimer = null, leaveTimer = null;
+
+function showPop(card) {
+  popCard = card;
+  const wide = card.dataset.vertical !== 'true';
+  popMedia.classList.toggle('vertical', !wide);
+  const w = wide ? 380 : 250;
+  pop.style.width = w + 'px';
+  popTitle.textContent = card.dataset.title;
+  popBadge.textContent = card.dataset.badge || '';
+  popBadge.style.display = card.dataset.badge ? '' : 'none';
+  if (popVideo.dataset.src !== card.dataset.src) { popVideo.src = card.dataset.src; popVideo.dataset.src = card.dataset.src; }
+  popVideo.currentTime = 0;
+  popVideo.play().catch(() => {});
+
+  const r = card.getBoundingClientRect();
+  const mediaH = wide ? w * 9 / 16 : w * 16 / 9;
+  const h = mediaH + 78;
+  let left = r.left + r.width / 2 - w / 2;
+  let top = r.top + r.height / 2 - h / 2;
+  left = Math.max(12, Math.min(left, window.innerWidth - w - 12));
+  top = Math.max(74, Math.min(top, window.innerHeight - h - 12));
+  pop.style.left = left + 'px';
+  pop.style.top = top + 'px';
+  pop.classList.add('show');
+}
+function hidePop() {
+  pop.classList.remove('show');
+  popVideo.pause();
+  popCard = null;
+}
+
 document.querySelectorAll('.card').forEach((card) => {
-  const fire = () =>
-    openModal({
-      type: card.dataset.type,
-      src: card.dataset.src,
-      drive: card.dataset.drive,
-      title: card.dataset.title,
-      desc: card.dataset.desc,
-    });
-  card.addEventListener('click', fire);
+  // Clic en la tarjeta -> reproductor grande
+  card.addEventListener('click', () => openModalFromCard(card));
   card.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fire(); }
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModalFromCard(card); }
+  });
+  if (!supportsHover) return;
+  card.addEventListener('mouseenter', () => {
+    clearTimeout(leaveTimer);
+    enterTimer = setTimeout(() => showPop(card), 420);
+  });
+  card.addEventListener('mouseleave', () => {
+    clearTimeout(enterTimer);
+    leaveTimer = setTimeout(hidePop, 130);
   });
 });
+
+if (supportsHover) {
+  pop.addEventListener('mouseenter', () => clearTimeout(leaveTimer));
+  pop.addEventListener('mouseleave', () => { leaveTimer = setTimeout(hidePop, 130); });
+  pop.addEventListener('click', () => { if (popCard) openModalFromCard(popCard); });
+  window.addEventListener('scroll', () => { if (pop.classList.contains('show')) hidePop(); }, true);
+}
 
 modal.querySelectorAll('[data-close]').forEach((el) => el.addEventListener('click', closeModal));
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });

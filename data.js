@@ -31,7 +31,7 @@ const CATALOG = [
     row: "Reels & Contenido Vertical",
     layout: "portrait",
     items: [
-      { title: "Jarrito · TikTok", desc: "Comercial vertical optimizado para TikTok/Reels — Jarrito.", badge: "REEL", poster: "assets/portadas/jarrito-tiktok.jpg", color: ["#e63946", "#1d1d2b"], type: "mp4", src: "assets/videos/jarrito-tiktok.mp4", drive: "1dgLUL8Dvmo0jnJWum5f7W1RfDhgFaRjH" },
+      { title: "Jarrito · TikTok", desc: "Comercial vertical optimizado para TikTok/Reels — Jarrito.", badge: "REEL", vertical: true, poster: "assets/portadas/jarrito-tiktok.jpg", color: ["#e63946", "#1d1d2b"], type: "mp4", src: "assets/videos/jarrito-tiktok.mp4", drive: "1dgLUL8Dvmo0jnJWum5f7W1RfDhgFaRjH" },
     ],
   },
   {
