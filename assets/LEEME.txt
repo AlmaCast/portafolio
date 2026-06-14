@@ -1,0 +1,4 @@
+Pon aquí tus archivos:
+- Fotos: assets/perfil.jpg, etc.
+- Videos: assets/videos/mi-video.mp4
+Luego edita data.js para enlazarlos.
