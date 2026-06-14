@@ -89,9 +89,7 @@ function openModal(data) {
   mTitle.textContent = data.title;
   mDesc.textContent = data.desc;
   let html = '';
-  if (data.drive) {
-    html = `<iframe src="https://drive.google.com/file/d/${data.drive}/preview" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
-  } else if (data.type === 'mp4') {
+  if (data.type === 'mp4') {
     html = `<video src="${data.src}" controls autoplay playsinline></video>`;
   } else if (data.type === 'youtube') {
     html = `<iframe src="https://www.youtube.com/embed/${data.src}?autoplay=1" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>`;

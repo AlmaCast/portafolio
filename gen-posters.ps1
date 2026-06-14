@@ -11,17 +11,14 @@ Get-CimInstance Win32_Process -Filter "Name='chrome.exe'" -ErrorAction SilentlyC
   ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
 Start-Sleep -Milliseconds 500
 
+# Solo los que siguen siendo automaticos (las portadas personalizadas NO se tocan)
 $entries = @(
-  @{slug="mojito-wings-exterior"; seek=8;   badge="PUBLICIDAD"; title="MOJITO WINGS";       sub="Video para pantallas en exterior"}
-  @{slug="coca-cola-zombies";     seek=30;  badge="COMERCIAL";  title="COCA-COLA: ZOMBIES"; sub="Comercial +18 - Proyecto UAT"}
-  @{slug="vidrieria-zamora";      seek=20;  badge="COMERCIAL";  title="VIDRIERIA ZAMORA";   sub="Comercial de marca"}
   @{slug="pantalla-construferia"; seek=8;   badge="PANTALLA";   title="CONSTRUFERIA";       sub="Contenido para pantalla publicitaria"}
   @{slug="jarrito-tiktok";        seek=6;   badge="REEL";       title="JARRITO";            sub="Comercial vertical para TikTok"}
   @{slug="seven-producto-musical";seek=30;  badge="MUSICA";     title="SEVEN";              sub="Video musical de producto"}
   @{slug="seven-presentacion";    seek=30;  badge="MARCA";      title="SEVEN";              sub="Video de presentacion"}
   @{slug="seven-redes";           seek=20;  badge="SOCIAL";     title="SEVEN";              sub="Contenido para redes sociales"}
   @{slug="lucas-cortometraje";    seek=120; badge="CORTO";      title="LUCAS";              sub="Cortometraje - Produccion audiovisual"}
-  @{slug="peso-visual";           seek=120; badge="AUDIOVISUAL";title="PESO VISUAL";        sub="Narrativa y composicion"}
 )
 
 foreach ($e in $entries) {
@@ -49,7 +46,7 @@ html,body{width:720px;height:1280px;overflow:hidden;background:#05070d}
 <div class="poster"><div class="bg"></div><div class="shade"></div>
 <div class="logo"><img src="../marca/logo-blanco.png"><span>ALMA C.</span></div>
 <div class="bottom"><span class="badge">$($e.badge)</span><div class="title">$($e.title)</div><div class="sub">$($e.sub)</div></div>
-<div class="foot">PORTAFOLIO 2025</div></div></body></html>
+<div class="foot">PORTAFOLIO 2026</div></div></body></html>
 "@
   $htmlPath = Join-Path $tmp "$slug.html"
   Set-Content -Path $htmlPath -Value $html -Encoding UTF8
