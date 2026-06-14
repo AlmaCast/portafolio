@@ -83,7 +83,7 @@ a { color: inherit; text-decoration: none; }
 .row-track::-webkit-scrollbar { display: none; }
 
 /* Tarjetas */
-.card { flex: 0 0 auto; scroll-snap-align: start; cursor: pointer; transition: transform .3s; }
+.card { position: relative; flex: 0 0 auto; scroll-snap-align: start; cursor: pointer; transition: transform .3s; }
 .row.landscape .card { width: clamp(220px, 26vw, 320px); }
 .row.portrait .card { width: clamp(165px, 19vw, 232px); }
 .card-media {
