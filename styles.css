@@ -92,41 +92,43 @@ a { color: inherit; text-decoration: none; }
 }
 .row.landscape .card-media { aspect-ratio: 16/9; }
 .row.portrait .card-media { aspect-ratio: 9/16; }
-.card-media::after { content: ''; position: absolute; inset: 0; z-index: 1; background: linear-gradient(180deg, transparent 45%, rgba(0,0,0,.55)); }
-/* Video preview (hover) */
-.card-preview {
-  position: absolute; inset: 0; width: 100%; height: 100%;
-  object-fit: cover; opacity: 0; transition: opacity .4s ease; z-index: 0;
-}
-.card.previewing .card-preview { opacity: 1; }
-.card.previewing .card-play { opacity: 0; }
-/* Título que aparece al hacer hover */
-.card-title-overlay {
-  position: absolute; left: 0; right: 0; bottom: 0; z-index: 2;
-  padding: 26px 12px 10px; font-family: 'Oswald', sans-serif; font-weight: 600;
-  font-size: 14px; letter-spacing: .5px; color: #fff;
-  background: linear-gradient(180deg, transparent, rgba(0,0,0,.85));
-  opacity: 0; transform: translateY(6px); transition: opacity .3s, transform .3s;
-  text-shadow: 0 2px 10px rgba(0,0,0,.7);
-}
-.card:hover .card-title-overlay { opacity: 1; transform: none; }
-.card-badge {
-  position: absolute; top: 10px; left: 10px; z-index: 2;
-  font-family: 'Oswald', sans-serif; font-size: 10px; letter-spacing: 1.5px;
-  background: var(--red); color: #fff; padding: 4px 9px; border-radius: 4px;
-}
+/* (sin overlay oscuro: los pósters ya traen su propio diseño) */
 .card-play {
   position: absolute; inset: 0; z-index: 2; display: grid; place-items: center;
   font-size: 30px; color: #fff; opacity: 0; transition: opacity .3s;
-  text-shadow: 0 4px 18px rgba(0,0,0,.6);
+  text-shadow: 0 4px 18px rgba(0,0,0,.6); pointer-events: none;
 }
-.card-meta { display: none; }
-.card-meta h4 { font-family: 'Oswald', sans-serif; font-weight: 500; font-size: 14px; letter-spacing: .5px; color: var(--muted); transition: color .2s; }
-.card:hover { transform: scale(1.05); z-index: 6; }
-.card-media { transition: box-shadow .3s; }
-.card:hover .card-media { box-shadow: 0 18px 45px rgba(0,0,0,.6); }
-.card:hover .card-play { opacity: 1; }
-.card:hover .card-meta h4 { color: var(--text); }
+.card:hover .card-play { opacity: .9; }
+.card.expanded { z-index: 60; }
+.card.expanded .card-play { opacity: 0; }
+
+/* ===== Tarjeta expandida en hover (crece desde adentro) ===== */
+.card-expand {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;
+  opacity: 0; pointer-events: none; background: #11151f;
+  border-radius: 10px; overflow: hidden; display: flex; flex-direction: column;
+  transition: opacity .18s ease, width .26s ease, height .26s ease, left .26s ease, top .26s ease, box-shadow .26s ease;
+}
+.card.expanded .card-expand {
+  opacity: 1; pointer-events: auto;
+  box-shadow: 0 24px 70px rgba(0,0,0,.7); border: 1px solid var(--panel-border);
+}
+.ce-media { position: relative; width: 100%; flex: 1 1 auto; background: #000; overflow: hidden; }
+.ce-video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ce-badge {
+  position: absolute; top: 10px; left: 10px; font-family: 'Oswald', sans-serif;
+  font-size: 10px; letter-spacing: 1.5px; background: var(--red); color: #fff;
+  padding: 4px 9px; border-radius: 4px;
+}
+.ce-badge:empty { display: none; }
+.ce-info { box-sizing: border-box; height: 78px; padding: 11px 14px; display: flex; flex-direction: column; gap: 7px; }
+.ce-play {
+  font-family: 'Oswald', sans-serif; letter-spacing: 1px; font-size: 13px;
+  border: none; cursor: pointer; background: #fff; color: #05070d;
+  padding: 7px 16px; border-radius: 6px; align-self: flex-start;
+}
+.ce-play:hover { background: #e2e2e2; }
+.ce-title { font-family: 'Oswald', sans-serif; font-weight: 600; font-size: 15px; margin: 0; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .card:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; border-radius: 12px; }
 
 /* Flechas */
@@ -197,33 +199,6 @@ a { color: inherit; text-decoration: none; }
 .clink.tk:hover { background: rgba(255,255,255,.12); }
 .clink.em:hover { background: rgba(29,127,184,.22); }
 .footer { margin-top: 60px; color: var(--muted); font-size: 13px; opacity: .7; }
-
-/* ===== PREVIEW POPUP (hover estilo Netflix) ===== */
-.preview-pop {
-  position: fixed; z-index: 130; opacity: 0; transform: scale(.92);
-  transform-origin: center; pointer-events: none; cursor: pointer;
-  transition: opacity .2s ease, transform .2s ease;
-  background: #11151f; border: 1px solid var(--panel-border);
-  border-radius: 10px; overflow: hidden; box-shadow: 0 24px 70px rgba(0,0,0,.75);
-}
-.preview-pop.show { opacity: 1; transform: scale(1); pointer-events: auto; }
-.pp-media { position: relative; width: 100%; aspect-ratio: 16/9; background: #000; }
-.pp-media.vertical { aspect-ratio: 9/16; }
-.pp-video { width: 100%; height: 100%; object-fit: cover; display: block; }
-.pp-badge {
-  position: absolute; top: 10px; left: 10px; font-family: 'Oswald', sans-serif;
-  font-size: 10px; letter-spacing: 1.5px; background: var(--red); color: #fff;
-  padding: 4px 9px; border-radius: 4px;
-}
-.pp-badge:empty { display: none; }
-.pp-info { box-sizing: border-box; height: 78px; padding: 11px 14px; display: flex; flex-direction: column; gap: 7px; }
-.pp-play {
-  font-family: 'Oswald', sans-serif; letter-spacing: 1px; font-size: 13px;
-  border: none; cursor: pointer; background: #fff; color: #05070d;
-  padding: 7px 16px; border-radius: 6px; transition: background .2s; align-self: flex-start;
-}
-.pp-play:hover { background: #e2e2e2; }
-.pp-title { font-family: 'Oswald', sans-serif; font-weight: 600; font-size: 15px; margin: 0; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* ===== MODAL ===== */
 .modal { position: fixed; inset: 0; z-index: 200; display: none; align-items: center; justify-content: center; padding: 20px; }

@@ -6,15 +6,20 @@ function cardMarkup(item) {
   const bg = item.poster
     ? `background-image:url('${item.poster}');background-size:cover;background-position:center;`
     : `background:${grad};`;
-  const badge = item.badge ? `<span class="card-badge">${item.badge}</span>` : '';
+  const badge = item.badge ? `<span class="ce-badge">${item.badge}</span>` : '';
+  const preview = item.src.replace('assets/videos/', 'assets/previews/');
   return `
     <article class="card" tabindex="0"
-      data-type="${item.type}" data-src="${item.src}" data-drive="${item.drive || ''}"
-      data-vertical="${item.vertical ? 'true' : 'false'}" data-badge="${item.badge || ''}"
+      data-type="${item.type}" data-src="${item.src}" data-preview="${preview}"
+      data-vertical="${item.vertical ? 'true' : 'false'}"
       data-title="${item.title}" data-desc="${item.desc}">
-      <div class="card-media" style="${bg}">
-        ${badge}
-        <div class="card-play">▶</div>
+      <div class="card-media" style="${bg}"><div class="card-play">▶</div></div>
+      <div class="card-expand">
+        <div class="ce-media"><video class="ce-video" muted loop playsinline preload="none"></video>${badge}</div>
+        <div class="ce-info">
+          <button class="ce-play" aria-label="Reproducir">▶ Reproducir</button>
+          <h4 class="ce-title">${item.title}</h4>
+        </div>
       </div>
     </article>`;
 }
@@ -48,20 +53,18 @@ document.querySelectorAll('.row-wrap').forEach((wrap) => {
   );
 });
 
-/* ===== Modal de video ===== */
+/* ===== Modal de video (Plyr) ===== */
 const modal = document.getElementById('modal');
+const modalBox = modal.querySelector('.modal-box');
 const player = document.getElementById('modalPlayer');
 const mTitle = document.getElementById('modalTitle');
 const mDesc = document.getElementById('modalDesc');
-
-const modalBox = modal.querySelector('.modal-box');
 let currentPlyr = null;
 
 function openModal(data) {
   mTitle.textContent = data.title;
   mDesc.textContent = data.desc;
   modalBox.classList.toggle('vertical', !!data.vertical);
-
   if (data.type === 'mp4') {
     player.innerHTML = `<video id="plyrVideo" playsinline controls preload="auto"><source src="${data.src}" type="video/mp4"></video>`;
     currentPlyr = new Plyr('#plyrVideo', {
@@ -74,8 +77,6 @@ function openModal(data) {
     });
   } else if (data.type === 'youtube') {
     player.innerHTML = `<div class="ratio169"><iframe src="https://www.youtube.com/embed/${data.src}?autoplay=1" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>`;
-  } else if (data.type === 'tiktok') {
-    player.innerHTML = `<div class="ratio169"><iframe src="${data.src}" allow="autoplay; encrypted-media" allowfullscreen></iframe></div>`;
   } else {
     player.innerHTML = `<div class="ratio169"><div class="modal-empty">🎬 Video próximamente</div></div>`;
   }
@@ -97,100 +98,83 @@ function closeModal() {
   player.innerHTML = '';
   document.body.style.overflow = '';
 }
+modal.querySelectorAll('[data-close]').forEach((el) => el.addEventListener('click', closeModal));
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
 
-/* ===== Preview popup que se ensancha al video (estilo Netflix) ===== */
+/* ===== Hover estilo Netflix: la tarjeta crece desde adentro y empuja vecinas ===== */
 const supportsHover = window.matchMedia('(hover: hover)').matches;
-const pop = document.getElementById('previewPop');
-const popVideo = pop.querySelector('.pp-video');
-const popMedia = pop.querySelector('.pp-media');
-const popBadge = pop.querySelector('.pp-badge');
-const popTitle = pop.querySelector('.pp-title');
-let popCard = null, popTrack = null, enterTimer = null, leaveTimer = null;
-const INFO_H = 78; // alto de la barra de info del popup
+const INFO_H = 78;
+let expandedCard = null, expandedTrack = null, enterTimer = null;
 
 function resetSiblings() {
-  if (popTrack) popTrack.querySelectorAll('.card').forEach((c) => { c.style.transform = ''; });
-  popTrack = null;
+  if (expandedTrack) expandedTrack.querySelectorAll('.card').forEach((c) => { c.style.transform = ''; });
+  expandedTrack = null;
 }
-
-function showPop(card) {
+function collapse(card) {
+  const exp = card.querySelector('.card-expand');
+  // Cierre instantáneo (sin animación) para que no se encime con la nueva tarjeta
+  exp.style.transition = 'none';
+  card.classList.remove('expanded');
+  exp.style.width = ''; exp.style.height = ''; exp.style.left = ''; exp.style.top = '';
+  void exp.offsetWidth; // forzar reflow
+  exp.style.transition = '';
+  const v = card.querySelector('.ce-video');
+  if (v) v.pause();
   resetSiblings();
-  popCard = card;
+  if (expandedCard === card) expandedCard = null;
+}
+function expand(card) {
+  if (expandedCard && expandedCard !== card) collapse(expandedCard);
+  expandedCard = card;
+  const exp = card.querySelector('.card-expand');
+  const v = card.querySelector('.ce-video');
   const wide = card.dataset.vertical !== 'true';
-  popMedia.classList.toggle('vertical', !wide);
-  popTitle.textContent = card.dataset.title;
-  popBadge.textContent = card.dataset.badge || '';
-  popBadge.style.display = card.dataset.badge ? '' : 'none';
-  if (popVideo.dataset.src !== card.dataset.src) { popVideo.src = card.dataset.src; popVideo.dataset.src = card.dataset.src; }
-  popVideo.currentTime = 0;
-  popVideo.play().catch(() => {});
+  const Wc = card.offsetWidth, Hc = card.offsetHeight;
+  // Misma altura que el póster (cubre el alto de la fila); el ancho se adapta al video
+  const He = Hc;
+  const We = wide ? (Hc - INFO_H) * 16 / 9 : Wc * 1.12;
 
-  const r = card.getBoundingClientRect();
-  const H = r.height; // alto del póster: la versión grande cubre este alto
-  let w;
-  if (wide) {
-    // video 16:9 arriba + info abajo, ocupando el MISMO alto del póster
-    w = (H - INFO_H) * 16 / 9;
-  } else {
-    // vertical: se queda casi igual, solo crece un poco
-    w = r.width * 1.18;
-  }
-  pop.style.width = w + 'px';
+  // Posición centrada sobre la tarjeta, pero sin salirse de la fila visible
+  const cr = card.getBoundingClientRect();
+  const tr = card.closest('.row-track').getBoundingClientRect();
+  let leftVp = cr.left + (Wc - We) / 2;
+  leftVp = Math.max(tr.left + 6, Math.min(leftVp, tr.right - We - 6));
+  exp.style.width = We + 'px';
+  exp.style.height = He + 'px';
+  exp.style.left = (leftVp - cr.left) + 'px';
+  exp.style.top = '0px';
 
-  // Anclado a la fila: mismo borde superior, centrado sobre la tarjeta
-  let left = r.left + r.width / 2 - w / 2;
-  left = Math.max(12, Math.min(left, window.innerWidth - w - 12));
-  let top = r.top;
-  if (!wide) top = Math.max(74, r.top - 30); // el vertical crece un poco hacia arriba
-  pop.style.left = left + 'px';
-  pop.style.top = top + 'px';
-  pop.classList.add('show');
+  if (v.dataset.src !== card.dataset.preview) { v.src = card.dataset.preview; v.dataset.src = card.dataset.preview; }
+  v.currentTime = 0;
+  v.play().catch(() => {});
+  card.classList.add('expanded');
 
-  // Empujar a las tarjetas vecinas para hacer espacio (efecto Netflix)
-  popTrack = card.closest('.row-track');
-  if (popTrack) {
-    const cards = [...popTrack.querySelectorAll('.card')];
-    const i = cards.indexOf(card);
-    const shift = Math.max(0, (w - r.width) / 2);
-    cards.forEach((c, idx) => {
-      if (idx < i) c.style.transform = `translateX(${-shift}px)`;
-      else if (idx > i) c.style.transform = `translateX(${shift}px)`;
-    });
-  }
-}
-function hidePop() {
-  pop.classList.remove('show');
-  popVideo.pause();
-  resetSiblings();
-  popCard = null;
+  // Empujar a las vecinas para hacer espacio
+  expandedTrack = card.closest('.row-track');
+  const cards = [...expandedTrack.querySelectorAll('.card')];
+  const i = cards.indexOf(card);
+  const shift = Math.max(0, (We - Wc) / 2);
+  cards.forEach((c, idx) => {
+    if (idx < i) c.style.transform = `translateX(${-shift}px)`;
+    else if (idx > i) c.style.transform = `translateX(${shift}px)`;
+  });
 }
 
 document.querySelectorAll('.card').forEach((card) => {
-  // Clic en la tarjeta -> reproductor grande
   card.addEventListener('click', () => openModalFromCard(card));
   card.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModalFromCard(card); }
   });
   if (!supportsHover) return;
   card.addEventListener('mouseenter', () => {
-    clearTimeout(leaveTimer);
-    enterTimer = setTimeout(() => showPop(card), 420);
+    clearTimeout(enterTimer);
+    enterTimer = setTimeout(() => expand(card), 320);
   });
   card.addEventListener('mouseleave', () => {
     clearTimeout(enterTimer);
-    leaveTimer = setTimeout(hidePop, 130);
+    collapse(card);
   });
 });
-
-if (supportsHover) {
-  pop.addEventListener('mouseenter', () => clearTimeout(leaveTimer));
-  pop.addEventListener('mouseleave', () => { leaveTimer = setTimeout(hidePop, 130); });
-  pop.addEventListener('click', () => { if (popCard) openModalFromCard(popCard); });
-  window.addEventListener('scroll', () => { if (pop.classList.contains('show')) hidePop(); }, true);
-}
-
-modal.querySelectorAll('[data-close]').forEach((el) => el.addEventListener('click', closeModal));
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
 
 /* ===== Nav: fondo sólido al hacer scroll ===== */
 const nav = document.getElementById('nav');
