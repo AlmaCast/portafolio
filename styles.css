@@ -131,11 +131,26 @@ a { color: inherit; text-decoration: none; }
 .skills { display: flex; flex-wrap: wrap; gap: 10px; }
 .skill { font-family: 'Oswald', sans-serif; font-size: 13px; letter-spacing: .5px; padding: 7px 16px; border-radius: 999px; background: var(--panel); border: 1px solid var(--panel-border); transition: transform .2s, border-color .2s; }
 .skill:hover { transform: translateY(-2px); border-color: rgba(29,127,184,.5); }
+.skill.alt { border-color: rgba(230,57,70,.35); }
+.skill.alt:hover { border-color: rgba(230,57,70,.7); }
 .metrics { max-width: 520px; }
 .metric { margin-bottom: 14px; }
 .metric span { font-size: 12px; letter-spacing: 2px; color: var(--muted); font-family: 'Oswald', sans-serif; text-transform: uppercase; }
 .bar { height: 7px; border-radius: 999px; background: rgba(255,255,255,.08); overflow: hidden; margin-top: 6px; }
 .bar i { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--red), var(--blue)); }
+
+/* ===== EXPERIENCIA & FORMACIÓN ===== */
+.experience { padding: clamp(40px, 7vh, 80px) clamp(18px, 6vw, 70px); max-width: 1150px; margin: 0 auto; }
+.exp-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: clamp(28px, 5vw, 64px); }
+.section-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(28px, 4vw, 44px); letter-spacing: 2px; margin-bottom: 24px; }
+.timeline { list-style: none; position: relative; padding-left: 26px; }
+.timeline::before { content: ''; position: absolute; top: 6px; bottom: 6px; left: 7px; width: 2px; background: linear-gradient(180deg, var(--red), var(--blue)); opacity: .5; }
+.timeline li { position: relative; padding: 0 0 26px 0; }
+.timeline li::before { content: ''; position: absolute; left: -26px; top: 5px; width: 12px; height: 12px; border-radius: 50%; background: var(--red); box-shadow: 0 0 0 4px rgba(230,57,70,.18); }
+.timeline.edu li::before { background: var(--blue); box-shadow: 0 0 0 4px rgba(29,127,184,.18); }
+.t-date { font-family: 'Oswald', sans-serif; font-size: 12px; letter-spacing: 1.5px; color: var(--blue); text-transform: uppercase; }
+.timeline h4 { font-family: 'Oswald', sans-serif; font-weight: 600; font-size: 16px; margin: 3px 0 5px; }
+.timeline p { color: var(--muted); font-size: 14px; max-width: 560px; }
 
 /* ===== CONTACTO ===== */
 .contact { text-align: center; padding: clamp(60px, 12vh, 130px) clamp(18px, 6vw, 70px) 40px; background: radial-gradient(700px 400px at 50% 0%, rgba(29,127,184,.18), transparent 60%); }
@@ -169,5 +184,6 @@ a { color: inherit; text-decoration: none; }
 @media (max-width: 860px) {
   .nav-links { display: none; }
   .about-inner { grid-template-columns: 1fr; }
+  .exp-grid { grid-template-columns: 1fr; }
   .billboard { min-height: 86vh; }
 }
