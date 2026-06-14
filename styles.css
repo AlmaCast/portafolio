@@ -85,7 +85,7 @@ a { color: inherit; text-decoration: none; }
 /* Tarjetas */
 .card { flex: 0 0 auto; scroll-snap-align: start; cursor: pointer; transition: transform .3s; }
 .row.landscape .card { width: clamp(220px, 26vw, 320px); }
-.row.portrait .card { width: clamp(150px, 18vw, 210px); }
+.row.portrait .card { width: clamp(165px, 19vw, 232px); }
 .card-media {
   position: relative; border-radius: 10px; overflow: hidden;
   border: 1px solid var(--panel-border); box-shadow: 0 10px 30px rgba(0,0,0,.45);
@@ -120,7 +120,7 @@ a { color: inherit; text-decoration: none; }
   font-size: 30px; color: #fff; opacity: 0; transition: opacity .3s;
   text-shadow: 0 4px 18px rgba(0,0,0,.6);
 }
-.card-meta { padding: 8px 2px 0; }
+.card-meta { display: none; }
 .card-meta h4 { font-family: 'Oswald', sans-serif; font-weight: 500; font-size: 14px; letter-spacing: .5px; color: var(--muted); transition: color .2s; }
 .card:hover { transform: scale(1.12); z-index: 6; }
 .card-media { transition: box-shadow .3s; }

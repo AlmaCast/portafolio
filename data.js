@@ -17,7 +17,7 @@
 const CATALOG = [
   {
     row: "Comerciales & Publicidad",
-    layout: "landscape",
+    layout: "portrait",
     items: [
       { title: "Mojito Wings · Spot", desc: "Spot publicitario — concepto, grabación y edición para Mojito Wings.", badge: "SPOT", poster: "assets/portadas/mojito-wings-spot.jpg", color: ["#e63946", "#1d1d2b"], type: "mp4", src: "assets/videos/mojito-wings-spot.mp4" },
       { title: "Mojito Wings · Exterior", desc: "Video para pantallas en exterior — Mojito Wings.", badge: "ADS", poster: "assets/portadas/mojito-wings-exterior.jpg", color: ["#1d7fb8", "#0b0f1a"], type: "mp4", src: "assets/videos/mojito-wings-exterior.mp4" },
@@ -35,7 +35,7 @@ const CATALOG = [
   },
   {
     row: "Proyecto SEVEN",
-    layout: "landscape",
+    layout: "portrait",
     items: [
       { title: "SEVEN · Video Musical", desc: "Video musical de producto — proyecto SEVEN.", badge: "MÚSICA", poster: "assets/portadas/seven-producto-musical.jpg", color: ["#1d7fb8", "#0b0f1a"], type: "mp4", src: "assets/videos/seven-producto-musical.mp4" },
       { title: "SEVEN · Presentación", desc: "Video de presentación de marca — SEVEN.", badge: "", poster: "assets/portadas/seven-presentacion.jpg", color: ["#e63946", "#0b0f1a"], type: "mp4", src: "assets/videos/seven-presentacion.mp4" },
@@ -44,7 +44,7 @@ const CATALOG = [
   },
   {
     row: "Producción Audiovisual",
-    layout: "landscape",
+    layout: "portrait",
     items: [
       { title: "LUCAS · Cortometraje", desc: "Cortometraje “LUCAS” — dirección y producción audiovisual.", badge: "CORTO", poster: "assets/portadas/lucas-cortometraje.jpg", color: ["#457b9d", "#0b0f1a"], type: "mp4", src: "assets/videos/lucas-cortometraje.mp4" },
       { title: "Peso Visual", desc: "Proyecto audiovisual de narrativa y composición — Peso Visual.", badge: "", poster: "assets/portadas/peso-visual.jpg", color: ["#9d4edd", "#0b0f1a"], type: "mp4", src: "assets/videos/peso-visual.mp4" },
