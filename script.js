@@ -66,15 +66,20 @@ function openModal(data) {
   mDesc.textContent = data.desc;
   modalBox.classList.toggle('vertical', !!data.vertical);
   if (data.type === 'mp4') {
-    player.innerHTML = `<video id="plyrVideo" playsinline controls preload="auto"><source src="${data.src}" type="video/mp4"></video>`;
-    currentPlyr = new Plyr('#plyrVideo', {
-      ratio: data.vertical ? '9:16' : '16:9',
-      autoplay: true,
-      controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'settings', 'pip', 'fullscreen'],
-      settings: ['speed'],
-      speed: { selected: 1, options: [0.5, 1, 1.5, 2] },
-      keyboard: { focused: true, global: true },
-    });
+    // El video SIEMPRE funciona con controles nativos; Plyr solo lo mejora si está disponible.
+    player.innerHTML = `<video id="plyrVideo" class="${data.vertical ? 'is-vertical' : ''}" playsinline controls autoplay preload="auto"><source src="${data.src}" type="video/mp4"></video>`;
+    try {
+      if (typeof Plyr !== 'undefined') {
+        currentPlyr = new Plyr('#plyrVideo', {
+          ratio: data.vertical ? '9:16' : '16:9',
+          autoplay: true,
+          controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'settings', 'pip', 'fullscreen'],
+          settings: ['speed'],
+          speed: { selected: 1, options: [0.5, 1, 1.5, 2] },
+          keyboard: { focused: true, global: true },
+        });
+      }
+    } catch (e) { currentPlyr = null; }
   } else if (data.type === 'youtube') {
     player.innerHTML = `<div class="ratio169"><iframe src="https://www.youtube.com/embed/${data.src}?autoplay=1" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>`;
   } else {
