@@ -31,8 +31,10 @@ a { color: inherit; text-decoration: none; }
   background: linear-gradient(180deg, rgba(5,7,13,.9), transparent);
 }
 .nav.scrolled { background: rgba(5,7,13,.96); box-shadow: 0 1px 0 rgba(255,255,255,.05); padding-top: 12px; padding-bottom: 12px; }
-.brand { font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: 3px; color: var(--red); }
-.brand-mark { color: var(--red); }
+.brand { display: inline-flex; align-items: center; gap: 9px; font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: 3px; color: var(--text); }
+.brand-mark { display: inline-flex; }
+.logo-a { width: 26px; height: 26px; fill: var(--red); filter: drop-shadow(0 3px 8px rgba(230,57,70,.45)); transition: transform .3s; }
+.brand:hover .logo-a { transform: rotate(-6deg) scale(1.08); }
 .nav-links { display: flex; gap: 24px; margin-left: 10px; }
 .nav-links a { font-size: 14px; color: var(--muted); transition: color .2s; }
 .nav-links a:hover { color: var(--text); }
