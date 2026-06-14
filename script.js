@@ -54,28 +54,44 @@ const player = document.getElementById('modalPlayer');
 const mTitle = document.getElementById('modalTitle');
 const mDesc = document.getElementById('modalDesc');
 
+const modalBox = modal.querySelector('.modal-box');
+let currentPlyr = null;
+
 function openModal(data) {
   mTitle.textContent = data.title;
   mDesc.textContent = data.desc;
-  let html = '';
+  modalBox.classList.toggle('vertical', !!data.vertical);
+
   if (data.type === 'mp4') {
-    html = `<video src="${data.src}" controls autoplay playsinline></video>`;
+    player.innerHTML = `<video id="plyrVideo" playsinline controls preload="auto"><source src="${data.src}" type="video/mp4"></video>`;
+    currentPlyr = new Plyr('#plyrVideo', {
+      ratio: data.vertical ? '9:16' : '16:9',
+      autoplay: true,
+      controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'settings', 'pip', 'fullscreen'],
+      settings: ['speed'],
+      speed: { selected: 1, options: [0.5, 1, 1.5, 2] },
+      keyboard: { focused: true, global: true },
+    });
   } else if (data.type === 'youtube') {
-    html = `<iframe src="https://www.youtube.com/embed/${data.src}?autoplay=1" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>`;
+    player.innerHTML = `<div class="ratio169"><iframe src="https://www.youtube.com/embed/${data.src}?autoplay=1" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe></div>`;
   } else if (data.type === 'tiktok') {
-    html = `<iframe src="${data.src}" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+    player.innerHTML = `<div class="ratio169"><iframe src="${data.src}" allow="autoplay; encrypted-media" allowfullscreen></iframe></div>`;
   } else {
-    html = `<div class="modal-empty">🎬 Video próximamente</div>`;
+    player.innerHTML = `<div class="ratio169"><div class="modal-empty">🎬 Video próximamente</div></div>`;
   }
-  player.innerHTML = html;
   modal.classList.add('open');
   modal.setAttribute('aria-hidden', 'false');
   document.body.style.overflow = 'hidden';
 }
 function openModalFromCard(card) {
-  openModal({ type: card.dataset.type, src: card.dataset.src, title: card.dataset.title, desc: card.dataset.desc });
+  openModal({
+    type: card.dataset.type, src: card.dataset.src,
+    title: card.dataset.title, desc: card.dataset.desc,
+    vertical: card.dataset.vertical === 'true',
+  });
 }
 function closeModal() {
+  if (currentPlyr) { try { currentPlyr.destroy(); } catch (e) {} currentPlyr = null; }
   modal.classList.remove('open');
   modal.setAttribute('aria-hidden', 'true');
   player.innerHTML = '';
