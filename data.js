@@ -1,66 +1,53 @@
 /* =========================================================================
    CATÁLOGO DE CONTENIDO  (estilo Netflix)
    -------------------------------------------------------------------------
-   Cómo agregar un video nuevo:
-   1. Copia un bloque { ... } dentro de la fila (row) que quieras.
-   2. Campos:
-        title  -> título de la tarjeta
-        desc   -> descripción corta (aparece en el reproductor)
-        badge  -> etiqueta opcional (ej. "TV", "REEL", "2025")
-        poster -> imagen de portada:  "assets/portada.jpg"
-                  (si lo dejas vacío, usa el gradiente 'color')
-        color  -> gradiente de respaldo  ["#e63946", "#0b0f1a"]
-        type   -> "mp4"  |  "youtube"  |  "tiktok"  |  "none"
-        src    -> según type:
-                    mp4     -> "assets/videos/mi-video.mp4"
-                    youtube -> "ID_DEL_VIDEO"  (lo que va después de v=)
-                    tiktok  -> "URL completa del TikTok"
-                    none    -> "" (solo muestra portada, sin reproductor)
+   Para agregar/editar un video, modifica un bloque { ... }.
+   Campos:
+     title  -> título de la tarjeta
+     desc   -> descripción (aparece en el reproductor)
+     badge  -> etiqueta opcional ("SPOT", "REEL", "CORTO"...)
+     poster -> portada "assets/portadas/x.jpg" (si vacío, usa gradiente)
+     color  -> gradiente de respaldo ["#e63946", "#0b0f1a"]
+     type   -> "mp4" | "youtube" | "tiktok" | "none"
+     src    -> mp4: "assets/videos/archivo.mp4"
 
-   layout de la fila:
-        "portrait"  -> tarjetas verticales 9:16 (reels, shorts, tiktoks)
-        "landscape" -> tarjetas horizontales 16:9 (comerciales, TV, edición)
+   layout: "portrait" (vertical 9:16) | "landscape" (horizontal 16:9)
    ========================================================================= */
 
 const CATALOG = [
   {
-    row: "Marketing Digital · MN Home Center",
+    row: "Comerciales & Publicidad",
     layout: "landscape",
     items: [
-      { title: "Campaña Redes 2026", desc: "Estrategia de contenido con KPI's de Meta.", badge: "META", poster: "", color: ["#e63946", "#1d1d2b"], type: "none", src: "" },
-      { title: "Pantallas Publicitarias", desc: "Contenido para pantallas en tienda.", badge: "ADS", poster: "", color: ["#1d7fb8", "#0b0f1a"], type: "none", src: "" },
-      { title: "Producción de Video", desc: "Preproducción, producción y postproducción.", badge: "", poster: "", color: ["#2a9d8f", "#0b0f1a"], type: "none", src: "" },
-      { title: "Reel de Producto", desc: "Contenido para redes sociales.", badge: "", poster: "", color: ["#9d4edd", "#0b0f1a"], type: "none", src: "" },
+      { title: "Mojito Wings · Spot", desc: "Spot publicitario — concepto, grabación y edición para Mojito Wings.", badge: "SPOT", poster: "assets/portadas/mojito-wings-spot.jpg", color: ["#e63946", "#1d1d2b"], type: "mp4", src: "assets/videos/mojito-wings-spot.mp4" },
+      { title: "Mojito Wings · Exterior", desc: "Video para pantallas en exterior — Mojito Wings.", badge: "ADS", poster: "assets/portadas/mojito-wings-exterior.jpg", color: ["#1d7fb8", "#0b0f1a"], type: "mp4", src: "assets/videos/mojito-wings-exterior.mp4" },
+      { title: "Coca-Cola · Zombies", desc: "Comercial Coca-Cola “Zombies” (+18) — proyecto audiovisual UAT.", badge: "COMERCIAL", poster: "assets/portadas/coca-cola-zombies.jpg", color: ["#9d4edd", "#0b0f1a"], type: "mp4", src: "assets/videos/coca-cola-zombies.mp4" },
+      { title: "Vidriería Zamora", desc: "Comercial de marca — Vidriería Zamora.", badge: "", poster: "assets/portadas/vidrieria-zamora.jpg", color: ["#2a9d8f", "#0b0f1a"], type: "mp4", src: "assets/videos/vidrieria-zamora.mp4" },
+      { title: "Construferia · Pantalla", desc: "Contenido para pantalla publicitaria — Construferia.", badge: "PANTALLA", poster: "assets/portadas/pantalla-construferia.jpg", color: ["#f4a261", "#1d1d2b"], type: "mp4", src: "assets/videos/pantalla-construferia.mp4" },
     ],
   },
   {
-    row: "Contenido para Redes · Reels",
+    row: "Reels & Contenido Vertical",
     layout: "portrait",
     items: [
-      { title: "Tendencias", desc: "Contenido del programa “Tendencias” (City Channel).", badge: "REEL", poster: "", color: ["#e63946", "#1d1d2b"], type: "none", src: "" },
-      { title: "Reel Vertical", desc: "Edición dinámica para redes.", badge: "", poster: "", color: ["#1d7fb8", "#0b0f1a"], type: "none", src: "" },
-      { title: "Short Promocional", desc: "Pieza corta de alto impacto.", badge: "", poster: "", color: ["#9d4edd", "#0b0f1a"], type: "none", src: "" },
-      { title: "Behind Scenes", desc: "Detrás de cámaras.", badge: "", poster: "", color: ["#2a9d8f", "#0b0f1a"], type: "none", src: "" },
-      { title: "Trend Edit", desc: "Edición sobre tendencia.", badge: "", poster: "", color: ["#f4a261", "#1d1d2b"], type: "none", src: "" },
+      { title: "Jarrito · TikTok", desc: "Comercial vertical optimizado para TikTok/Reels — Jarrito.", badge: "REEL", poster: "assets/portadas/jarrito-tiktok.jpg", color: ["#e63946", "#1d1d2b"], type: "mp4", src: "assets/videos/jarrito-tiktok.mp4" },
     ],
   },
   {
-    row: "Televisión · City Channel",
+    row: "Proyecto SEVEN",
     layout: "landscape",
     items: [
-      { title: "Programa Tendencias", desc: "Grabación y edición de contenido televisivo.", badge: "TV", poster: "", color: ["#457b9d", "#0b0f1a"], type: "none", src: "" },
-      { title: "Programación Pagada", desc: "Apoyo en edición de programación pagada.", badge: "", poster: "", color: ["#e63946", "#0b0f1a"], type: "none", src: "" },
-      { title: "Cápsula Informativa", desc: "Contenido para televisión.", badge: "", poster: "", color: ["#2a9d8f", "#1d1d2b"], type: "none", src: "" },
+      { title: "SEVEN · Video Musical", desc: "Video musical de producto — proyecto SEVEN.", badge: "MÚSICA", poster: "assets/portadas/seven-producto-musical.jpg", color: ["#1d7fb8", "#0b0f1a"], type: "mp4", src: "assets/videos/seven-producto-musical.mp4" },
+      { title: "SEVEN · Presentación", desc: "Video de presentación de marca — SEVEN.", badge: "", poster: "assets/portadas/seven-presentacion.jpg", color: ["#e63946", "#0b0f1a"], type: "mp4", src: "assets/videos/seven-presentacion.mp4" },
+      { title: "SEVEN · Redes", desc: "Pieza para redes sociales — SEVEN.", badge: "", poster: "assets/portadas/seven-redes.jpg", color: ["#2a9d8f", "#1d1d2b"], type: "mp4", src: "assets/videos/seven-redes.mp4" },
     ],
   },
   {
-    row: "Comerciales & Voz en Off",
+    row: "Producción Audiovisual",
     layout: "landscape",
     items: [
-      { title: "Comercial", desc: "Creación de comerciales: audiovisual y narrativa.", badge: "SPOT", poster: "", color: ["#f4a261", "#1d1d2b"], type: "none", src: "" },
-      { title: "Voz en Off", desc: "Locución para piezas audiovisuales.", badge: "VOZ", poster: "", color: ["#1d7fb8", "#0b0f1a"], type: "none", src: "" },
-      { title: "Diagnóstico H. María Elena", desc: "Comunicación interna (abr–may 2023).", badge: "2023", poster: "", color: ["#e63946", "#0b0f1a"], type: "none", src: "" },
-      { title: "Narrativa Audiovisual", desc: "Guion y narrativa para video.", badge: "", poster: "", color: ["#9d4edd", "#0b0f1a"], type: "none", src: "" },
+      { title: "LUCAS · Cortometraje", desc: "Cortometraje “LUCAS” — dirección y producción audiovisual.", badge: "CORTO", poster: "assets/portadas/lucas-cortometraje.jpg", color: ["#457b9d", "#0b0f1a"], type: "mp4", src: "assets/videos/lucas-cortometraje.mp4" },
+      { title: "Peso Visual", desc: "Proyecto audiovisual de narrativa y composición — Peso Visual.", badge: "", poster: "assets/portadas/peso-visual.jpg", color: ["#9d4edd", "#0b0f1a"], type: "mp4", src: "assets/videos/peso-visual.mp4" },
     ],
   },
 ];
