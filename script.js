@@ -134,14 +134,19 @@ function expand(card) {
   const He = Hc;
   const We = wide ? (Hc - INFO_H) * 16 / 9 : Wc * 1.12;
 
-  // Posición centrada sobre la tarjeta, pero sin salirse de la fila visible
-  const cr = card.getBoundingClientRect();
-  const tr = card.closest('.row-track').getBoundingClientRect();
-  let leftVp = cr.left + (Wc - We) / 2;
-  leftVp = Math.max(tr.left + 6, Math.min(leftVp, tr.right - We - 6));
+  // Anclaje según posición en la fila: 1ª crece a la derecha, última a la izquierda, el resto al centro
+  expandedTrack = card.closest('.row-track');
+  const cards = [...expandedTrack.querySelectorAll('.card')];
+  const i = cards.indexOf(card);
+  const extra = Math.max(0, We - Wc);
+  let leftExt, rightExt;
+  if (i === 0) { leftExt = 0; rightExt = extra; }
+  else if (i === cards.length - 1) { leftExt = extra; rightExt = 0; }
+  else { leftExt = extra / 2; rightExt = extra / 2; }
+
   exp.style.width = We + 'px';
   exp.style.height = He + 'px';
-  exp.style.left = (leftVp - cr.left) + 'px';
+  exp.style.left = (-leftExt) + 'px';
   exp.style.top = '0px';
 
   if (v.dataset.src !== card.dataset.preview) { v.src = card.dataset.preview; v.dataset.src = card.dataset.preview; }
@@ -149,14 +154,10 @@ function expand(card) {
   v.play().catch(() => {});
   card.classList.add('expanded');
 
-  // Empujar a las vecinas para hacer espacio
-  expandedTrack = card.closest('.row-track');
-  const cards = [...expandedTrack.querySelectorAll('.card')];
-  const i = cards.indexOf(card);
-  const shift = Math.max(0, (We - Wc) / 2);
+  // Empujar a las vecinas justo lo que se extiende de cada lado
   cards.forEach((c, idx) => {
-    if (idx < i) c.style.transform = `translateX(${-shift}px)`;
-    else if (idx > i) c.style.transform = `translateX(${shift}px)`;
+    if (idx < i) c.style.transform = `translateX(${-leftExt}px)`;
+    else if (idx > i) c.style.transform = `translateX(${rightExt}px)`;
   });
 }
 
