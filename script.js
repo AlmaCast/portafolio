@@ -89,14 +89,19 @@ const popVideo = pop.querySelector('.pp-video');
 const popMedia = pop.querySelector('.pp-media');
 const popBadge = pop.querySelector('.pp-badge');
 const popTitle = pop.querySelector('.pp-title');
-let popCard = null, enterTimer = null, leaveTimer = null;
+let popCard = null, popTrack = null, enterTimer = null, leaveTimer = null;
+const INFO_H = 78; // alto de la barra de info del popup
+
+function resetSiblings() {
+  if (popTrack) popTrack.querySelectorAll('.card').forEach((c) => { c.style.transform = ''; });
+  popTrack = null;
+}
 
 function showPop(card) {
+  resetSiblings();
   popCard = card;
   const wide = card.dataset.vertical !== 'true';
   popMedia.classList.toggle('vertical', !wide);
-  const w = wide ? 380 : 250;
-  pop.style.width = w + 'px';
   popTitle.textContent = card.dataset.title;
   popBadge.textContent = card.dataset.badge || '';
   popBadge.style.display = card.dataset.badge ? '' : 'none';
@@ -105,19 +110,42 @@ function showPop(card) {
   popVideo.play().catch(() => {});
 
   const r = card.getBoundingClientRect();
-  const mediaH = wide ? w * 9 / 16 : w * 16 / 9;
-  const h = mediaH + 78;
+  const H = r.height; // alto del póster: la versión grande cubre este alto
+  let w;
+  if (wide) {
+    // video 16:9 arriba + info abajo, ocupando el MISMO alto del póster
+    w = (H - INFO_H) * 16 / 9;
+  } else {
+    // vertical: se queda casi igual, solo crece un poco
+    w = r.width * 1.18;
+  }
+  pop.style.width = w + 'px';
+
+  // Anclado a la fila: mismo borde superior, centrado sobre la tarjeta
   let left = r.left + r.width / 2 - w / 2;
-  let top = r.top + r.height / 2 - h / 2;
   left = Math.max(12, Math.min(left, window.innerWidth - w - 12));
-  top = Math.max(74, Math.min(top, window.innerHeight - h - 12));
+  let top = r.top;
+  if (!wide) top = Math.max(74, r.top - 30); // el vertical crece un poco hacia arriba
   pop.style.left = left + 'px';
   pop.style.top = top + 'px';
   pop.classList.add('show');
+
+  // Empujar a las tarjetas vecinas para hacer espacio (efecto Netflix)
+  popTrack = card.closest('.row-track');
+  if (popTrack) {
+    const cards = [...popTrack.querySelectorAll('.card')];
+    const i = cards.indexOf(card);
+    const shift = Math.max(0, (w - r.width) / 2);
+    cards.forEach((c, idx) => {
+      if (idx < i) c.style.transform = `translateX(${-shift}px)`;
+      else if (idx > i) c.style.transform = `translateX(${shift}px)`;
+    });
+  }
 }
 function hidePop() {
   pop.classList.remove('show');
   popVideo.pause();
+  resetSiblings();
   popCard = null;
 }
 
