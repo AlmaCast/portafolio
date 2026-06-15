@@ -70,6 +70,12 @@ a { color: inherit; text-decoration: none; }
 .billboard-stats div { display: flex; flex-direction: column; }
 .billboard-stats b { font-family: 'Bebas Neue', sans-serif; font-size: clamp(28px, 4vw, 44px); letter-spacing: 1px; color: var(--text); }
 .billboard-stats span { font-size: 12px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; }
+.hero-contact { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+.hc { font-family: 'Oswald', sans-serif; font-size: 13px; letter-spacing: .5px; padding: 9px 16px; border-radius: 999px; background: var(--panel); border: 1px solid var(--panel-border); color: var(--text); transition: transform .2s, background .2s; }
+.hc:hover { transform: translateY(-2px); }
+.hc.wa:hover { background: rgba(37,211,102,.22); }
+.hc.em:hover { background: rgba(29,127,184,.22); }
+.hc.tel:hover { background: rgba(255,255,255,.1); }
 
 /* ===== CATÁLOGO / FILAS ===== */
 .catalog { position: relative; z-index: 5; margin-top: -8vh; padding-bottom: 40px; }
